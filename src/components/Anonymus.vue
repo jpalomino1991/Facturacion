@@ -19,9 +19,9 @@
                 <v-row>
                   <v-col cols="12" sm="6" md="6">
                     <v-text-field
-                      v-model="name"
+                      v-model="serie"
                       :counter="4"
-                      :rules="nameRules"
+                      :rules="serieRules"
                       label="Serie"
                       placeholder="F001/B001"
                       required
@@ -29,23 +29,25 @@
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
                     <v-text-field
-                      v-model="name"
+                      v-model="numero"
                       :counter="3"
-                      :rules="nameRules"
+                      :rules="numeroRules"
                       label="Número"
                       placeholder="269"
                       required
+                      type="number"
                     ></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="12">
                     <v-text-field
-                      v-model="email"
-                      :rules="emailRules"
-                      label="E-mail"
-                      placeholder="tucorreo@gmail.com"
+                      v-model="monto"
+                      label="Monto"
+                      :rules="montoRules"
+                      placeholder="265.78"
                       required
+                      type="number"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -64,6 +66,7 @@
                           label="Fecha de emisión"
                           prepend-icon="mdi-calendar"
                           readonly
+                          :rules="dateRules"
                           v-bind="attrs"
                           v-on="on"
                         ></v-text-field>
@@ -104,7 +107,7 @@
                   :disabled="!valid"
                   color="success"
                   class="mr-4"
-                  @click="validate"
+                  @click="consultar"
                 >
                   <v-icon
                     left
@@ -132,22 +135,30 @@
 </template>
 
 <script>
+  import axios from 'axios';
   export default {
-    name: 'HelloWorld',
+    name: 'Anonymus',
 
     data: () => ({
       valid: true,
-      name: '',
+      serie: '',
+      numero: '',
       modal: false,
       date: '',
-      nameRules: [
-        v => !!v || 'Name is required',
-        v => (v && v.length <= 10) || 'Name must be less than 10 characters',
+      dateRules: [
+        v => !!v || 'Ingrese la fecha de emisión',
       ],
-      email: '',
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+      serieRules: [
+        v => !!v || 'Ingrese la serie',
+        v => (v && v.length <= 4) || 'Serie debe ser de 4 caracteres',
+      ],
+      numeroRules: [
+        v => !!v || 'Ingrese el número',
+        v => (v && v.length <= 3) || 'Número debe ser de 3 dígitos',
+      ],
+      monto: '',
+      montoRules: [
+        v => !!v || 'Ingrese el monto',
       ],
       select: null,
       items: [
@@ -169,6 +180,24 @@
       resetValidation () {
         this.$refs.form.resetValidation()
       },
+      async consultar() {
+        if(this.$refs.form.validate())
+        {
+          try{
+            let resp = await axios.post("https://localhost:44366/consulta/AccesoAnonimo", { 
+              "serie": this.serie,
+              "numero": this.numero,
+              "monto": this.monto,
+              "fecha": this.date });
+             console.log(resp); 
+          }
+          catch(error){
+            console.log(error.response);
+          }
+        }
+      }
+    },
+    created() {
     },
   }
 </script>
