@@ -18,7 +18,7 @@
                 <v-row>
                   <v-col cols="12">
                     <v-text-field
-                      v-model="name"
+                      v-model="email"
                       :rules="emailRules"
                       label="Correo"
                       placeholder="tucorreo@gmail.com"
@@ -30,7 +30,7 @@
                 <v-row>
                   <v-col cols="12">
                     <v-text-field
-                      v-model="email"
+                      v-model="password"
                       :append-icon="mostrar ? 'mdi-eye' : 'mdi-eye-off'"
                       :rules="[rules.required, rules.min]"
                       :type="mostrar ? 'text' : 'password'"
@@ -52,7 +52,7 @@
                   :disabled="!valid"
                   color="success"
                   class="mr-4"
-                  @click="validate"
+                  @click="login"
                 >
                   <v-icon
                     left
@@ -60,7 +60,7 @@
                   >
                     mdi-magnify
                   </v-icon>
-                  Consultar
+                  Iniciar
                 </v-btn>
 
                 <v-btn
@@ -81,7 +81,8 @@
 </template>
 
 <script>
-    import Home from '../components/Home.vue'
+  import Home from '../components/Home.vue'
+  import axios from 'axios';
 
   export default {
     name: 'Login',
@@ -91,12 +92,12 @@
 
     data: () => ({
       valid: true,
-      name: '',
+      password: '',
       mostrar: false,
       email: '',
       rules: {
           required: value => !!value || 'Ingrese contraseña.',
-          min: v => v.length >= 8 || 'Min 8 caracteres',
+          min: v => v.length >= 6 || 'Min 6 caracteres',
           emailMatch: () => (`The email and password you entered don't match`),
         },
       emailRules: [
@@ -106,8 +107,22 @@
     }),
 
     methods: {
-      validate () {
-        this.$refs.form.validate()
+      async login () {
+        if(this.$refs.form.validate())
+        {
+          try{
+            let resp = await axios.post("cuenta/Login", { 
+              "email": this.email,
+              "password": this.password
+            });
+            console.log(resp);
+            if(resp.status == 200)
+              this.$router.push({ name: 'Recibo' });
+          }
+          catch(error){
+            console.log(error.response);
+          }
+        }
       },
       reset () {
         this.$refs.form.reset()
