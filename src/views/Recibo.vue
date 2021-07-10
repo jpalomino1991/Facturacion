@@ -6,5 +6,8 @@
 
 export default ({
     name: 'Recibo',
+    created() {
+
+    },
 })
 </script>

@@ -58,7 +58,7 @@
                     left
                     dark
                   >
-                    mdi-magnify
+                    mdi-login
                   </v-icon>
                   Iniciar
                 </v-btn>
@@ -68,6 +68,12 @@
                   class="mr-4"
                   @click="reset"
                 >
+                  <v-icon
+                    left
+                    dark
+                  >
+                    mdi-broom
+                  </v-icon>
                   Limpiar
                 </v-btn>
                 <home />
@@ -115,9 +121,17 @@
               "email": this.email,
               "password": this.password
             });
-            console.log(resp);
+            console.log(resp.data);
             if(resp.status == 200)
+            {
+              this.$store.commit("setAuthentication", { 
+                id: resp.data.id,
+                email: resp.data.email,
+                numeroDocumento: resp.data.numeroDocumento,
+                razonSocial: resp.data.razonSocial,
+                })
               this.$router.push({ name: 'Recibo' });
+            }
           }
           catch(error){
             console.log(error.response);

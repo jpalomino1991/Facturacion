@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import ConsultaAnonima from '../views/ConsultaAnonima.vue'
 import Login from '../views/Login.vue'
+import store from '../store'
 import Register from '../views/Register.vue'
 import Recibo from '../views/Recibo.vue'
 
@@ -26,7 +27,13 @@ const routes = [
   {
     path: '/recibo',
     name: 'Recibo',
-    component: Recibo
+    component: Recibo,
+    beforeEnter: (to, from, next) => {
+      if(store.state.user.credentials.email)
+        next();
+      else
+        next("/login");
+    }
   }
 ]
 
