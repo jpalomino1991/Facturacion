@@ -40,7 +40,7 @@
                   </v-col>
                 </v-row>
                 <v-row>
-                  <v-col cols="12">
+                  <v-col cols="12" sm="6" md="6">
                     <v-text-field
                       v-model="monto"
                       label="Monto"
@@ -50,9 +50,7 @@
                       type="number"
                     ></v-text-field>
                   </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12">
+                  <v-col cols="12" sm="6" md="6">
                     <v-dialog
                       ref="dialog"
                       v-model="modal"
@@ -96,8 +94,6 @@
                   </v-col>
                 </v-row>
               </v-container>
-
-              
             </v-form>
           </v-card-text>
           <v-card-actions >
@@ -108,6 +104,7 @@
                   color="success"
                   class="mr-4"
                   @click="consultar"
+                  :loading="loading"
                 >
                   <v-icon
                     left
@@ -135,7 +132,6 @@
 </template>
 
 <script>
-  import axios from 'axios';
   export default {
     name: 'Anonymus',
 
@@ -144,6 +140,7 @@
       serie: '',
       numero: '',
       modal: false,
+      loading: false,
       date: '',
       dateRules: [
         v => !!v || 'Ingrese la fecha de emisión',
@@ -183,16 +180,12 @@
       async consultar() {
         if(this.$refs.form.validate())
         {
-          try{
-            let resp = await axios.post("https://localhost:44366/consulta/AccesoAnonimo", { 
-              "serie": this.serie,
-              "numero": this.numero,
-              "monto": this.monto,
-              "fecha": this.date });
-             console.log(resp); 
-          }
-          catch(error){
-            console.log(error.response);
+          this.loading = true;
+          this.valid = false;
+          let resp = await this.$parent.consultar(this.serie,this.numero,this.monto,this.date);
+          if(resp !== '')  {
+            this.loading = false;
+            this.valid = true;
           }
         }
       }
@@ -201,3 +194,42 @@
     },
   }
 </script>
+
+<style scoped>
+  .custom-loader {
+    animation: loader 1s infinite;
+    display: flex;
+  }
+  @-moz-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-webkit-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-o-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
