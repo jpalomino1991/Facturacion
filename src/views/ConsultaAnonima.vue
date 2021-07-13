@@ -1,7 +1,7 @@
 <template>
   <div>
     <anonymus />
-    <result :bills="comprobantes"/>
+    <result :bills="comprobantes" v-if="comprobantes.length > 0"/>
   </div>
 </template>
 
@@ -38,6 +38,29 @@ import axios from 'axios'
           console.log(error.response);
           return error.response;
         }
+      },
+      async downloadFile(file, type) {
+        try
+        {
+          let resp = await axios.get(`consulta/Download/?codigo=${file.codigoComprobante}&tipo=${type}`)
+          if(resp.status == 200)
+          {
+            const blob = new Blob([resp.data.itemImage], { type: `application/${type == 1 ? 'xml' : 'pdf'}` })
+            const link = document.createElement('a')
+            link.href = URL.createObjectURL(blob)
+            link.download = resp.data.nombreArchivo
+            link.click()
+            URL.revokeObjectURL(link.href)
+          }
+          return resp;
+        }
+        catch(err)
+        {
+          return err;
+        }
+      },
+      reset() {
+        this.comprobantes = []
       }
     }
   }
