@@ -68,7 +68,7 @@
               <v-list-item-title>Principal</v-list-item-title>
             </v-list-item>
             <v-list-item>
-              <v-list-item-title>Cerrar Sesion</v-list-item-title>
+              <v-list-item-title @click="logout">Cerrar Sesion</v-list-item-title>
             </v-list-item>
           </div>
           <v-list-item to="/">
@@ -97,6 +97,11 @@ export default {
   computed: {
     user () {
       return store.state.user.credentials.razonSocial;
+    }
+  },
+  methods: {
+    logout() {
+      this.$parent.logout()
     }
   },
   watch: {

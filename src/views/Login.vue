@@ -53,6 +53,7 @@
                   color="success"
                   class="mr-4"
                   @click="login"
+                  :loading="loading"
                 >
                   <v-icon
                     left
@@ -77,6 +78,7 @@
                   Limpiar
                 </v-btn>
                 <home />
+                <snackbar :text="error" :snackbar="snackbar" />
               </v-row>
             </v-container>
           </v-card-actions>
@@ -88,18 +90,21 @@
 
 <script>
   import Home from '../components/Home.vue'
-  import axios from 'axios';
+  import Snackbar from '../components/Snackbar.vue'
+  import axios from 'axios'
 
   export default {
     name: 'Login',
     components: {
         Home,
+        Snackbar,
     },
 
     data: () => ({
       valid: true,
       password: '',
       mostrar: false,
+      loading: false,
       email: '',
       rules: {
           required: value => !!value || 'Ingrese contraseña.',
@@ -110,12 +115,16 @@
         v => !!v || 'Ingrese un correo',
         v => /.+@.+\..+/.test(v) || 'Ingrese correo válido',
       ],
+      error: "",
+      snackbar: false,
     }),
 
     methods: {
       async login () {
         if(this.$refs.form.validate())
         {
+          this.loading = true
+          this.valid = false
           try{
             let resp = await axios.post("cuenta/Login", { 
               "email": this.email,
@@ -132,9 +141,15 @@
                 })
               this.$router.push({ name: 'Recibo' });
             }
+            this.loading = false
+            this.valid = true
           }
           catch(error){
-            console.log(error.response);
+            this.snackbar = true
+            this.error = "No hay respuesta del server"
+            console.log(error.response)
+            this.loading = false
+            this.valid = true
           }
         }
       },
