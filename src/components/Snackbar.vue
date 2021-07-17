@@ -1,34 +1,39 @@
 <template>
   <v-snackbar
-    v-model="snackbar"
-    :timeout="timeout"
+    v-model="error"
+    bottom
+    absolute
+    timeout="-1"
     color="red"
   >
       {{ text }}
-
       <template v-slot:action="{ attrs }">
         <v-btn
           color="blue"
           text
           v-bind="attrs"
-          @click="snackbar = false"
+          @click="cerrar()"
         >
-          Close
+          Cerrar
         </v-btn>
       </template>
   </v-snackbar>
 </template>
 
 <script>
+import { EventBus } from '../event-bus'
+
 export default {
     name: "Snackbar",
-    data: () => ({
-        timeout: 3000,
-    }),
-    props: ['text','snackbar'],
+    props: ['text','error'],
+    methods: {
+      cerrar () {
+        EventBus.$emit('close')
+      }
+    },
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

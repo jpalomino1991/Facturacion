@@ -1,13 +1,14 @@
 <template>
   <div>
-    <anonymus />
-    <result :bills="comprobantes" v-if="comprobantes.length > 0"/>
+    <Anonymus />
+    <Result :bills="comprobantes" v-if="comprobantes.length > 0"/>
   </div>
 </template>
 
 <script>
 import Anonymus from '../components/Anonymus.vue'
 import Result from '../components/Result.vue'
+import { EventBus } from '../event-bus'
 import axios from 'axios'
 
   export default {
@@ -17,7 +18,7 @@ import axios from 'axios'
     }),
     components: {
       Anonymus,
-      Result
+      Result,
     },
     methods: {
       async consultar(serie,numero,monto,fecha) {
@@ -27,7 +28,6 @@ import axios from 'axios'
             "numero": numero,
             "monto": monto,
             "fecha": fecha });
-            console.log(resp);
             if(resp.status == 200)
             {
               this.comprobantes = resp.data;
@@ -35,8 +35,7 @@ import axios from 'axios'
             return resp.status;
         }
         catch(error){
-          console.log(error.response);
-          return error.response;
+          EventBus.$emit('error', error)
         }
       },
       async downloadFile(file, type) {
@@ -56,7 +55,7 @@ import axios from 'axios'
         }
         catch(err)
         {
-          return err;
+          EventBus.$emit('error', err)
         }
       },
       reset() {

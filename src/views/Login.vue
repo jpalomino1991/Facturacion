@@ -77,8 +77,7 @@
                   </v-icon>
                   Limpiar
                 </v-btn>
-                <home />
-                <snackbar :text="error" :snackbar="snackbar" />
+                <Home />
               </v-row>
             </v-container>
           </v-card-actions>
@@ -90,14 +89,13 @@
 
 <script>
   import Home from '../components/Home.vue'
-  import Snackbar from '../components/Snackbar.vue'
+  import { EventBus } from '../event-bus'
   import axios from 'axios'
 
   export default {
     name: 'Login',
     components: {
         Home,
-        Snackbar,
     },
 
     data: () => ({
@@ -115,14 +113,13 @@
         v => !!v || 'Ingrese un correo',
         v => /.+@.+\..+/.test(v) || 'Ingrese correo válido',
       ],
-      error: "",
-      snackbar: false,
     }),
 
     methods: {
       async login () {
         if(this.$refs.form.validate())
         {
+          this.show = false
           this.loading = true
           this.valid = false
           try{
@@ -130,7 +127,6 @@
               "email": this.email,
               "password": this.password
             });
-            console.log(resp.data);
             if(resp.status == 200)
             {
               this.$store.commit("setAuthentication", { 
@@ -145,9 +141,8 @@
             this.valid = true
           }
           catch(error){
-            this.snackbar = true
-            this.error = "No hay respuesta del server"
-            console.log(error.response)
+            EventBus.$emit('error', error)
+            this.show = true
             this.loading = false
             this.valid = true
           }

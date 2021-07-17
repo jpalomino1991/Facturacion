@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+  <div>
     <v-app-bar
       app
       color="primary"
@@ -46,15 +46,7 @@
                 width="150"
               />
             </div>
-          </v-list-item>
-          <v-list-item class="d-flex justify-center mb-6">
-            <v-avatar
-              color="indigo"
-              size="36"
-            >
-              <span class="white--text text-h5">Y</span>
-            </v-avatar>
-          </v-list-item>
+          </v-list-item>          
           <div v-if="!user">
             <v-list-item to="/login">
               <v-list-item-title>Iniciar Sesión</v-list-item-title>
@@ -64,6 +56,14 @@
             </v-list-item>
           </div>
           <div v-else>
+            <v-list-item class="d-flex justify-center mb-6">
+              <v-avatar
+                color="indigo"
+                size="36"
+              >
+                <span class="white--text text-h5">{{ user.charAt(0) }}</span>
+              </v-avatar>
+            </v-list-item>
             <v-list-item to="/recibo">
               <v-list-item-title>Principal</v-list-item-title>
             </v-list-item>
@@ -81,11 +81,12 @@
     <v-main>
       <router-view/>
     </v-main>
-  </v-app>
+  </div>
 </template>
 
 <script>
 import store from '../store'
+import { EventBus } from '../event-bus'
 
 export default {
   name: 'Navbar',
@@ -101,7 +102,7 @@ export default {
   },
   methods: {
     logout() {
-      this.$parent.logout()
+      EventBus.$emit('logout')
     }
   },
   watch: {
@@ -111,3 +112,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+</style>
