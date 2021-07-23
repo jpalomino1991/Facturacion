@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import ConsultaAnonima from '../views/ConsultaAnonima.vue'
+import RegisterSuccessful from '../views/RegisterSuccessful.vue'
+import ConfirmEmailOk from '../views/ConfirmEmailOk.vue'
 import Login from '../views/Login.vue'
 import store from '../store'
 import Register from '../views/Register.vue'
@@ -23,6 +25,16 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register
+  },
+  {
+    path: '/registersuccessful',
+    name: 'RegisterSuccessful',
+    component: RegisterSuccessful
+  },
+  {
+    path: '/confirmemailok',
+    name: 'ConfirmEmailOk',
+    component: ConfirmEmailOk
   },
   {
     path: '/recibo',

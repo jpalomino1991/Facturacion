@@ -82,6 +82,8 @@
             </v-container>
           </v-card-actions>
         </v-card>
+        <Button route="/" text="Acceso Anonimo" />
+        <Button route="/register" text="Recuperar Contraseña" />
       </v-col>
     </v-row>
   </v-container>
@@ -89,6 +91,7 @@
 
 <script>
   import Home from '../components/Home.vue'
+  import Button from '../components/Button.vue'
   import { EventBus } from '../event-bus'
   import axios from 'axios'
 
@@ -96,6 +99,7 @@
     name: 'Login',
     components: {
         Home,
+        Button,
     },
 
     data: () => ({

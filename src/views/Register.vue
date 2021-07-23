@@ -15,8 +15,7 @@
               lazy-validation
             >
               <v-text-field
-                v-model="name"
-                :rules="emailRules"
+                v-model="razonSocial"
                 label="Razón Social/Nombre"
                 placeholder="Electro Sur Este/Juan Perez"
                 required
@@ -30,15 +29,14 @@
                 required
               ></v-select>
               <v-text-field
-                v-model="name"
-                :rules="emailRules"
+                v-model="numeroDocumento"
                 label="Número Documento"
                 placeholder="54389234"
                 required
                 prepend-icon="mdi-account"
               ></v-text-field>
               <v-text-field
-                v-model="name"
+                v-model="email"
                 :rules="emailRules"
                 label="Correo"
                 placeholder="tucorreo@gmail.com"
@@ -59,7 +57,7 @@
               <v-text-field
                 v-model="repassword"
                 :append-icon="mostrar2 ? 'mdi-eye' : 'mdi-eye-off'"
-                :rules="[rules.required, rules.min]"
+                :rules="[rules.required, rules.min, passwordConfirmationRule]"
                 :type="mostrar2 ? 'text' : 'password'"
                 label="Confirmar Contraseña"
                 required
@@ -77,6 +75,7 @@
                   color="success"
                   class="mr-4"
                   @click="validate"
+                  :loading="loading"
                 >
                   <v-icon
                     left
@@ -106,6 +105,8 @@
 
 <script>
   import Home from '../components/Home.vue'
+  import { EventBus } from '../event-bus'
+  import axios from 'axios'
 
   export default {
     name: 'Register',
@@ -127,18 +128,43 @@
       ],
       rules: {
           required: value => !!value || 'Ingrese contraseña.',
-          min: v => v.length >= 8 || 'Min 8 caracteres',
-          emailMatch: () => (`The email and password you entered don't match`),
+          min: v => v.length >= 6 || 'Min 6 caracteres',
         },
       emailRules: [
         v => !!v || 'Ingrese un correo',
         v => /.+@.+\..+/.test(v) || 'Ingrese correo válido',
       ],
     }),
-
+    computed: {
+      passwordConfirmationRule() {
+        return () => (this.password === this.repassword) || 'Contraseñas no coinciden'
+      }
+    },
     methods: {
-      validate () {
-        this.$refs.form.validate()
+      async validate () {
+        if(this.$refs.form.validate())
+        {
+          this.loading = true
+          this.valid = false
+          try{
+            let resp = await axios.post("cuenta/Register", { 
+              "razonSocial": this.razonSocial,
+              "numeroDocumento": this.numeroDocumento,
+              "email": this.email,
+              "password": this.password,
+              "confirmPassword": this.repassword
+            });
+            if(resp.status == 200)
+              this.$router.push({ name: 'Recibo' });
+            this.loading = false
+            this.valid = true
+          }
+          catch(error){
+            EventBus.$emit('error', error)
+            this.loading = false
+            this.valid = true
+          }
+        }
       },
       reset () {
         this.$refs.form.reset()
