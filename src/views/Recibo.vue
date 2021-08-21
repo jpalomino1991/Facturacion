@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import store from '../store'
 import axios from 'axios'
 import Result from '../components/Result.vue'
 
@@ -21,7 +20,7 @@ export default ({
     async mounted() {
         try
         {
-            let resp = await axios.get(`consulta/GetBills?numeroDocumento=${store.state.user.credentials.numeroDocumento}`)
+            let resp = await axios.get(`consulta/GetBills?numeroDocumento=${this.$store.state.user.credentials.numeroDocumento}`)
             if(resp.status == 200)
             {
                 console.log(resp.data)

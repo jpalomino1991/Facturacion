@@ -117,6 +117,7 @@
       valid: true,
       name: '',
       mostrar: false,
+      loading: false,
       mostrar2: false,
       email: '',
       password: '',
@@ -155,7 +156,7 @@
               "confirmPassword": this.repassword
             });
             if(resp.status == 200)
-              this.$router.push({ name: 'Recibo' });
+              this.$router.push({ name: 'RegisterOk' });
             this.loading = false
             this.valid = true
           }

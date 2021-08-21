@@ -7,7 +7,7 @@
         >
           <v-card-text>
             <p class="text-h4 text-center text--primary">
-              Iniciar Sesión
+              Recuperar Contraseña
             </p>
             <v-form
               ref="form"
@@ -15,18 +15,6 @@
               lazy-validation
             >
               <v-container>
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field
-                      v-model="email"
-                      :rules="emailRules"
-                      label="Correo"
-                      placeholder="tucorreo@gmail.com"
-                      required
-                      prepend-icon="mdi-account"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
                 <v-row>
                   <v-col cols="12">
                     <v-text-field
@@ -42,6 +30,21 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field
+                        v-model="repassword"
+                        :append-icon="mostrar2 ? 'mdi-eye' : 'mdi-eye-off'"
+                        :rules="[rules.required, rules.min, passwordConfirmationRule]"
+                        :type="mostrar2 ? 'text' : 'password'"
+                        label="Confirmar Contraseña"
+                        required
+                        @click:append="mostrar2 = !mostrar2"
+                        counter
+                        prepend-icon="mdi-lock"                        
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
               </v-container>
             </v-form>
           </v-card-text>
@@ -52,16 +55,16 @@
                   :disabled="!valid"
                   color="success"
                   class="mr-4"
-                  @click="login"
+                  @click="recover"
                   :loading="loading"
                 >
                   <v-icon
                     left
                     dark
                   >
-                    mdi-login
+                    mdi-content-save
                   </v-icon>
-                  Iniciar
+                  Guardar
                 </v-btn>
 
                 <v-btn
@@ -82,69 +85,64 @@
             </v-container>
           </v-card-actions>
         </v-card>
-        <Button-router route1="/" text1="Acceso Anónimo" route2="/forgetpassword" text2="Olvido Contraseña"/>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-  import Home from '../components/Home.vue'
-  import ButtonRouter from '../components/ButtonRouter.vue'
-  import { EventBus } from '../event-bus'
-  import axios from 'axios'
+import Home from '../components/Home.vue'
+import { EventBus } from '../event-bus'
+import axios from 'axios'
 
-  export default {
-    name: 'Login',
+export default {
+    name: "RecoverPassword",
     components: {
-        Home,
-        ButtonRouter,
+      Home,
     },
     data: () => ({
       valid: true,
-      password: '',
-      mostrar: false,
       loading: false,
+      mostrar: false,
+      mostrar2: false,
+      token: '',
       email: '',
+      password: '',
+      repassword: '',
       rules: {
           required: value => !!value || 'Ingrese contraseña.',
           min: v => v.length >= 6 || 'Min 6 caracteres',
-          emailMatch: () => (`The email and password you entered don't match`),
         },
-      emailRules: [
-        v => !!v || 'Ingrese un correo',
-        v => /.+@.+\..+/.test(v) || 'Ingrese correo válido',
-      ],
     }),
-
+    mounted() {
+        this.token = this.$route.params.token
+        this.email = this.$route.params.email
+    },
+    computed: {
+      passwordConfirmationRule() {
+        return () => (this.password === this.repassword) || 'Contraseñas no coinciden'
+      }
+    },
     methods: {
-      async login () {
+      async recover () {
         if(this.$refs.form.validate())
         {
-          this.show = false
           this.loading = true
           this.valid = false
           try{
-            let resp = await axios.post("cuenta/Login", { 
+            let resp = await axios.post("cuenta/RecuperarContrasena", { 
               "email": this.email,
-              "password": this.password
+              "token": this.token,
+              "password": this.password,
+              "confirmPassword": this.repassword
             });
             if(resp.status == 200)
-            {
-              this.$store.commit("setAuthentication", { 
-                id: resp.data.id,
-                email: resp.data.email,
-                numeroDocumento: resp.data.numeroDocumento,
-                razonSocial: resp.data.razonSocial,
-                })
-              this.$router.push({ name: 'Recibo' });
-            }
+              this.$router.push({ name: 'RecoverPasswordOk' });
             this.loading = false
             this.valid = true
           }
           catch(error){
             EventBus.$emit('error', error)
-            this.show = true
             this.loading = false
             this.valid = true
           }
@@ -157,5 +155,9 @@
         this.$refs.form.resetValidation()
       },
     },
-  }
+}
 </script>
+
+<style>
+
+</style>

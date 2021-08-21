@@ -126,13 +126,16 @@
             </v-container>
           </v-card-actions>
         </v-card>
+        <Button-router route1="/login" text1="Iniciar Sesión" route2="/register" text2="Crear Cuenta"/>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
+import ButtonRouter from './ButtonRouter.vue'
   export default {
+    components: { ButtonRouter },
     name: 'Anonymus',
 
     data: () => ({

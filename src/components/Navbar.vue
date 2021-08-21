@@ -85,7 +85,6 @@
 </template>
 
 <script>
-import store from '../store'
 import { EventBus } from '../event-bus'
 
 export default {
@@ -97,7 +96,7 @@ export default {
     }),
   computed: {
     user () {
-      return store.state.user.credentials.razonSocial;
+      return this.$store.state.user.credentials.razonSocial;
     }
   },
   methods: {
